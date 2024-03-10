@@ -1,35 +1,34 @@
-# holesail-liveports README
+# Holesail Liveports
 
-This is the README for your extension "holesail-liveports". After writing up a brief description, we recommend including the following sections.
+[Join our Discord Support Server](https://discord.gg/TQVacE7Vnj)
+
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Instantly share your localhost website with anyone in the world and see what your friends are building.
 
-For example if there is an image subfolder under your extension project workspace:
+- Expose your localhost on the internet
+- Connect to anyone's localhost through a connection Key
 
-\!\[feature X\]\(images/feature-x.png\)
+## How to Use
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Press `Ctrl + Shift + P` to execute extension commands and search for `liveports`.
 
-## Requirements
+You will see two commands in the list `liveports-share` and `liveports-connect`. If you are running something on your localhost, for example a live server you can share it with the liveports-share command.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+> liveports-share
 
-## Extension Settings
+* Choosing this command will give you two option, in the first option enter the `port` that your server is running on live host. 
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+* In the second option enter the `address` it is running on. It can be localhost, 127.0.0.1, 198.15.62.0 or anything that is running on your local system.
 
-For example:
+> liveports-connect
 
-This extension contributes the following settings:
+* First option will prompt you to enter a connection Key which you generate by using the liveports-share command. Use liveports-connect command on the computer that you want to view as a client.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* Second option will prompt you to enter a Port, choose the port where you want to preview the website on. Default port is `8000`
 
-## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
 
 ## Release Notes
 
@@ -37,29 +36,17 @@ Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release of Holesail Liveports.
 
 ---
 
-## Working with Markdown
+License : [GPL v3](https://www.gnu.org/licenses/gpl-3.0.txt)
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
+---
 ## For more information
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+* [Check our Github](https://github.com/holesail/liveports)
+* [Join our Discord Support Server](https://discord.gg/TQVacE7Vnj)
+
 
 **Enjoy!**
