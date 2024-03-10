@@ -7,6 +7,10 @@
   "engines": {
     "vscode": "^1.87.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holesail/liveports"
+  },
   "categories": [
     "Other"
   ],
