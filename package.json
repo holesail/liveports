@@ -3,7 +3,8 @@
   "displayName": "liveports",
   "publisher": "holesail",
   "description": "A VS Code extension to instantly create a network tunnel and share websites on your localhost with anyone in the world.",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.87.0"
   },
