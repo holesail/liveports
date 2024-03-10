@@ -1,8 +1,8 @@
 {
   "name": "holesail-liveports",
   "displayName": "liveports",
-  "description": "Instantly share your Live server with anyonene in the world.",
-  "version": "0.0.1",
+  "description": "A VS Code extension to instantly create a network tunnel and share websites on your localhost with anyone in the world.",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.87.0"
   },
@@ -12,10 +12,16 @@
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "holesail-liveports.liveports-share",
-      "title": "Instantly share a live port to anyone in the world"
-    }]
+    "commands": [
+      {
+        "command": "holesail-liveports.liveports-share",
+        "title": "Holesail Liveports Share: Instantly share your localhost website with anyone in the world."
+      },
+      {
+        "command": "holesail-liveports.liveports-connect",
+        "title": "Holesail Liveports Connect: Instantly view localhost website of anyone in the world using Liveports"
+      }
+    ]
   },
   "scripts": {
     "lint": "eslint .",
@@ -23,15 +29,17 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.87.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
+    "@types/vscode": "^1.87.0",
     "@vscode/test-cli": "^0.0.6",
-    "@vscode/test-electron": "^2.3.9"
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
+    "copy-paste": "^1.5.3",
+    "holesail-client": "^1.0.2",
     "holesail-server": "1.2.3"
   }
 }

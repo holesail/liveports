@@ -1,25 +1,23 @@
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-const commands = require('vscode');
+// The main module
 const DHT = require('holesail-server')
+const holesailClient = require('holesail-client')
+
+var ncp = require("copy-paste");
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-
 /**
  * @param {vscode.ExtensionContext} context
  */
+
 function activate(context) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('holesail-liveports.liveports-share', function () {
-		// The code you place here will be executed every time your command is executed
+	//register liveports-share command
+	let share = vscode.commands.registerCommand('holesail-liveports.liveports-share', function () {
 		
-		//validate is port is a valid number
+		//validate if port is a valid number
 		function validateInput(value) {
 			if (isNaN(value)) {
 				return "Port must be a valid number";
@@ -27,6 +25,7 @@ function activate(context) {
 			return null;
 		}
 		
+
 		//verify is the address is a correct Ip address
 		const addressRegex = /^(localhost|(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$/;
 		
@@ -62,8 +61,10 @@ function activate(context) {
 
 					vscode.window.showInformationMessage(address+":"+port+ ' Server public key:', server.getPublicKey()).then(selected => {
 						if (selected === server.getPublicKey()) {
-							vscode.commands.executeCommand('editor.action.clipboardCopyAction');
-							vscode.window.showInformationMessage('Key copied to clipboard.');
+							ncp.copy(selected, function () {
+								// complete...
+								vscode.window.showInformationMessage('Key copied to clipboard.');
+							  })
 						}
 					});
 				});
@@ -72,7 +73,48 @@ function activate(context) {
 
 	});
 
-	context.subscriptions.push(disposable);
+	//implementing connect feature
+	let connect = vscode.commands.registerCommand('holesail-liveports.liveports-connect', function () {
+		
+		//validate if port is a valid number
+		function validateInput(value) {
+			if (isNaN(value)) {
+				return "Port must be a valid number";
+			}
+			return null;
+		}
+		
+
+		//ask for connection key input
+		vscode.window.showInputBox({
+			prompt: "Enter connection key",
+			placeHolder: "Connection Key (Required)",
+		}).then(key => {
+			if (!key) {
+				return;
+			}
+		
+			//ask for port input
+			vscode.window.showInputBox({
+				prompt: "Enter Port (Optional)",
+				placeHolder: "8000",
+				validateInput
+			}).then(port => {
+				if (!port) {
+					port = '8000';
+				}
+		
+				const client = new holesailClient(key)
+				client.connect(+port, "localhost", () => {
+					vscode.window.showInformationMessage("Connected to the client","https://localhost:"+port+"/")
+				});
+			});
+		});
+
+	});
+
+	context.subscriptions.push(connect);
+	context.subscriptions.push(share);
 }
 
 // This method is called when your extension is deactivated
