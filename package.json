@@ -49,8 +49,8 @@
     "bcrypt": "^5.1.1",
     "copy-paste": "^1.5.3",
     "express": "^4.19.2",
-    "holesail-client": "^1.0.2",
-    "holesail-server": "1.2.3",
+    "holesail-client": "latest",
+    "holesail-server": "latest",
     "vsce": "^2.15.0",
     "vscode": "^1.1.37"
   }

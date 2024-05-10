@@ -34,9 +34,14 @@ You will see two commands in the list `liveports-share` and `liveports-connect`.
 
 Users appreciate release notes as you update your extension.
 
+### 1.0.2
+
+Updated holesail server and client.
+
 ### 1.0.0
 
 Initial release of Holesail Liveports.
+
 
 ---
 

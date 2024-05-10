@@ -43,7 +43,7 @@ function activate(context) {
                 }
 
                 server = new DHT();
-                server.serve(+port, address, () => {
+                server.serve({port: port, address: address}, () => {
                     console.log(address + ":" + port, "is now live on the following key =>");
                     console.log('Server public key:', server.getPublicKey());
 
@@ -87,7 +87,7 @@ function activate(context) {
                 }
 
                 client = new holesailClient(key)
-                client.connect(+port, "localhost", () => {
+                client.connect({port: port, address:"localhost"}, () => {
                     const url = "http://localhost:" + port + "/";
                     vscode.window.showInformationMessage("Connected to the client", url).then((selection) => {
                         if (selection === url) {
