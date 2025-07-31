@@ -243,6 +243,7 @@ function activate(context) {
           host: entry.address,
           udp: entry.protocol === 'UDP',
           secure: entry.secure,
+          key: entry.url
         });
         await holesail.ready();
         
@@ -250,7 +251,7 @@ function activate(context) {
         const url = info.url;
 
         activeServers.set(id, { holesail, port: entry.port, address: entry.address, protocol: entry.protocol, secure: entry.secure, url });
-        vscode.window.showInformationMessage(`${entry.address}:${entry.port} restarted successfully. New URL: ${url}`);
+        vscode.window.showInformationMessage(`${entry.address}:${entry.port} restarted successfully: ${entry.url}`);
       } catch (e) {
         vscode.window.showErrorMessage(`Failed to restart server: ${e.message}`);
       }
@@ -269,7 +270,8 @@ function activate(context) {
           secure: entry.secure,
           port: +entry.port,
           host: entry.address,
-          udp: entry.protocol === 'UDP'
+          udp: entry.protocol === 'UDP',
+          key: entry.url
         });
         await holesail.ready();
 
