@@ -1,9 +1,7 @@
 const vscode = require('vscode');
-const HolesailServer = require('holesail-server');
-const HolesailClient = require('holesail-client');
+const Holesail = require('holesail');
 const ncp = require("copy-paste");
 const crypto = require('crypto');
-const z32 = require('z32');
 
 let activeServers = new Map();
 let activeClients = new Map();
@@ -63,25 +61,24 @@ function activate(context) {
     }
     const secure = secureChoice === 'Yes';
 
-    let userKey = crypto.randomBytes(32).toString('hex');
-    const hash = crypto.createHash('sha256').update(userKey).digest();
-    const seed = hash.toString('hex');
+    let key;
+    if (secure) {
+      key = crypto.randomBytes(32).toString('hex');
+    }
 
     try {
-      let server = new HolesailServer();
-      await server.start({
+      let holesail = new Holesail({
+        server: true,
         port: +port,
         host: address,
         udp: udp,
         secure: secure,
-        seed: seed
+        key: key
       });
+      await holesail.ready();
 
-      const info = server.info;
-      const key = info.key;
-      const urlPrefix = secure ? 'hs://s000' : 'hs://0000';
-      const displayKey = userKey;
-      const url = urlPrefix + displayKey;
+      const info = holesail.info;
+      const url = info.url;
 
       console.log(`${address}:${port} is now live on the following URL => ${url}`);
 
@@ -93,7 +90,7 @@ function activate(context) {
         }
       });
 
-      activeServers.set(url, { server, port, address, protocol: proto, secure });
+      activeServers.set(url, { holesail, port, address, protocol: proto, secure });
     } catch (e) {
       vscode.window.showErrorMessage(`Failed to start server: ${e.message}`);
     }
@@ -108,32 +105,13 @@ function activate(context) {
       return;
     }
 
-    let secure = true; // Default to Yes
-    let keyStr = url;
-    if (url.startsWith('hs://')) {
-      const rest = url.substring(5);
-      if (rest.startsWith('s000')) {
-        secure = true;
-        keyStr = rest.substring(4);
-      } else if (rest.startsWith('0000')) {
-        secure = false;
-        keyStr = rest.substring(4);
-      } else {
-        keyStr = rest;
-      }
-    }
-
-    let pingKey;
-    if (secure) {
-      const hash = crypto.createHash('sha256').update(keyStr).digest();
-      pingKey = z32.encode(hash);
-    } else {
-      pingKey = keyStr;
-    }
+    const data = Holesail.urlParser(url);
+    let secure = data.secure !== undefined ? data.secure : true;
+    const keyStr = data.key;
 
     let result;
     try {
-      result = await HolesailClient.ping(pingKey);
+      result = await Holesail.lookup(url);
     } catch (e) {
       vscode.window.showErrorMessage(`Lookup failed: ${e.message}`);
       return;
@@ -165,30 +143,29 @@ function activate(context) {
       localAddress = '127.0.0.1';
     }
 
-    const clientKey = pingKey;
     const udp = result.udp;
+    let protocol = result.protocol ? result.protocol.toUpperCase() : (udp ? 'UDP' : 'TCP');
 
     try {
-      let client = new HolesailClient({
-        key: clientKey,
-        secure: secure
-      });
-      await client.connect({
+      let holesail = new Holesail({
+        client: true,
+        key: keyStr,
+        secure: secure,
         port: +localPort,
         host: localAddress,
         udp: udp
       });
+      await holesail.ready();
 
-      const protocol = result.protocol;
-      const localUrl = `${protocol === 'tcp' ? 'http' : 'udp'}://${localAddress}:${localPort}/`;
+      const localUrl = `${result.protocol === 'tcp' ? 'http' : 'udp'}://${localAddress}:${localPort}/`;
 
       vscode.window.showInformationMessage(`Connected to the client`, localUrl).then((selection) => {
-        if (selection === localUrl && protocol === 'tcp') {
+        if (selection === localUrl && result.protocol === 'tcp') {
           vscode.env.openExternal(vscode.Uri.parse(localUrl));
         }
       });
 
-      activeClients.set(+localPort, { client, url, address: localAddress, protocol, secure });
+      activeClients.set(+localPort, { holesail, url, address: localAddress, protocol, secure });
     } catch (e) {
       vscode.window.showErrorMessage(`Failed to connect: ${e.message}`);
     }
@@ -203,31 +180,11 @@ function activate(context) {
       return;
     }
 
-    let secure = true; // Default to Yes
-    let keyStr = url;
-    if (url.startsWith('hs://')) {
-      const rest = url.substring(5);
-      if (rest.startsWith('s000')) {
-        secure = true;
-        keyStr = rest.substring(4);
-      } else if (rest.startsWith('0000')) {
-        secure = false;
-        keyStr = rest.substring(4);
-      } else {
-        keyStr = rest;
-      }
-    }
-
-    let pingKey;
-    if (secure) {
-      const hash = crypto.createHash('sha256').update(keyStr).digest();
-      pingKey = z32.encode(hash);
-    } else {
-      pingKey = keyStr;
-    }
+    const data = Holesail.urlParser(url);
+    let secure = data.secure !== undefined ? data.secure : true;
 
     try {
-      const result = await HolesailClient.ping(pingKey);
+      const result = await Holesail.lookup(url);
       if (!result) {
         vscode.window.showInformationMessage('No information found for this URL.');
       } else {
@@ -250,7 +207,7 @@ function activate(context) {
         return;
       }
       try {
-        await entry.server.destroy();
+        await entry.holesail.close();
         activeServers.delete(url);
         vscode.window.showInformationMessage(`Removed shared port for ${url}`);
       } catch (e) {
@@ -271,7 +228,7 @@ function activate(context) {
         return;
       }
       try {
-        await entry.client.destroy();
+        await entry.holesail.close();
         activeClients.delete(port);
         vscode.window.showInformationMessage(`Disconnected client on port ${port}`);
       } catch (e) {

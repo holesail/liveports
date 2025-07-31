@@ -60,10 +60,8 @@
     "package": "vsce package"
   },
   "dependencies": {
-    "holesail-server": "^2.2.0",
-    "holesail-client": "^2.1.1",
-    "copy-paste": "^1.5.3",
-    "z32": "^1.1.0"
+    "holesail": "^2.2.0",
+    "copy-paste": "^1.5.3"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
