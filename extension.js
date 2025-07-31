@@ -1,7 +1,6 @@
 const vscode = require('vscode');
 const Holesail = require('holesail');
 const ncp = require("copy-paste");
-const crypto = require('crypto');
 
 let activeServers = new Map();
 let activeClients = new Map();
@@ -52,19 +51,14 @@ function activate(context) {
     }
     const udp = proto === 'UDP';
 
-    const secureOptions = ['Yes', 'No'];
-    const secureChoice = await vscode.window.showQuickPick(secureOptions, {
-      placeHolder: 'Use secure connection? (default: Yes)'
+    const privateOptions = ['true', 'false'];
+    const privateChoice = await vscode.window.showQuickPick(privateOptions, {
+      placeHolder: 'Use private connection? (default: true)'
     });
-    if (!secureChoice) {
+    if (!privateChoice) {
       return;
     }
-    const secure = secureChoice === 'Yes';
-
-    let key;
-    if (secure) {
-      key = crypto.randomBytes(32).toString('hex');
-    }
+    const private = privateChoice === 'true';
 
     try {
       let holesail = new Holesail({
@@ -72,8 +66,7 @@ function activate(context) {
         port: +port,
         host: address,
         udp: udp,
-        secure: secure,
-        key: key
+        secure: private,
       });
       await holesail.ready();
 
@@ -90,7 +83,8 @@ function activate(context) {
         }
       });
 
-      activeServers.set(url, { holesail, port, address, protocol: proto, secure });
+      const id = Math.random().toString(36).slice(2, 7);
+      activeServers.set(id, { holesail, port, address, protocol: proto, secure: private, url });
     } catch (e) {
       vscode.window.showErrorMessage(`Failed to start server: ${e.message}`);
     }
@@ -165,7 +159,8 @@ function activate(context) {
         }
       });
 
-      activeClients.set(+localPort, { holesail, url, address: localAddress, protocol, secure });
+      const id = Math.random().toString(36).slice(2, 7);
+      activeClients.set(id, { holesail, url, address: localAddress, protocol, secure, port: +localPort });
     } catch (e) {
       vscode.window.showErrorMessage(`Failed to connect: ${e.message}`);
     }
@@ -188,19 +183,19 @@ function activate(context) {
       if (!result) {
         vscode.window.showInformationMessage('No information found for this URL.');
       } else {
-        vscode.window.showInformationMessage(`Host: ${result.host}\nPort: ${result.port}\nProtocol: ${result.protocol}\nSecure: ${secure ? 'Yes' : 'No'}`);
+        vscode.window.showInformationMessage(`Host: ${result.host}\nPort: ${result.port}\nProtocol: ${result.protocol}\nPrivate: ${secure ? 'Yes' : 'No'}`);
       }
     } catch (e) {
       vscode.window.showErrorMessage(`Error: ${e.message}`);
     }
   });
 
-  let destroyServer = vscode.commands.registerCommand('holesail-liveports.destroyServer', async function (url) {
-    const entry = activeServers.get(url);
+  let destroyServer = vscode.commands.registerCommand('holesail-liveports.destroyServer', async function (id) {
+    const entry = activeServers.get(id);
     if (entry) {
       const confirmOptions = ['Yes', 'No'];
       const confirm = await vscode.window.showQuickPick(confirmOptions, {
-        placeHolder: `Are you sure you want to remove the server for ${url}?`
+        placeHolder: `Are you sure you want to remove the server for ${entry.url}?`
       });
       if (confirm !== 'Yes') {
         vscode.window.showInformationMessage('Server removal cancelled.');
@@ -208,20 +203,20 @@ function activate(context) {
       }
       try {
         await entry.holesail.close();
-        activeServers.delete(url);
-        vscode.window.showInformationMessage(`Removed shared port for ${url}`);
+        activeServers.delete(id);
+        vscode.window.showInformationMessage(`Removed shared port for ${entry.url}`);
       } catch (e) {
         vscode.window.showErrorMessage(`Failed to remove shared port: ${e.message}`);
       }
     }
   });
 
-  let disconnectClient = vscode.commands.registerCommand('holesail-liveports.disconnectClient', async function (port) {
-    const entry = activeClients.get(port);
+  let disconnectClient = vscode.commands.registerCommand('holesail-liveports.disconnectClient', async function (id) {
+    const entry = activeClients.get(id);
     if (entry) {
       const confirmOptions = ['Yes', 'No'];
       const confirm = await vscode.window.showQuickPick(confirmOptions, {
-        placeHolder: `Are you sure you want to disconnect the client on port ${port}?`
+        placeHolder: `Are you sure you want to disconnect the client on port ${entry.port}?`
       });
       if (confirm !== 'Yes') {
         vscode.window.showInformationMessage('Client disconnection cancelled.');
@@ -229,8 +224,8 @@ function activate(context) {
       }
       try {
         await entry.holesail.close();
-        activeClients.delete(port);
-        vscode.window.showInformationMessage(`Disconnected client on port ${port}`);
+        activeClients.delete(id);
+        vscode.window.showInformationMessage(`Disconnected client on port ${entry.port}`);
       } catch (e) {
         vscode.window.showErrorMessage(`Failed to disconnect client: ${e.message}`);
       }
@@ -241,25 +236,24 @@ function activate(context) {
     const items = [];
 
     if (activeServers.size > 0) {
-      for (const [url, { port, address, protocol, secure }] of activeServers) {
+      for (const [id, { port, address, protocol, secure, url }] of activeServers) {
         items.push({
           label: `Server: ${url}`,
-          detail: `Address: ${address}, Port: ${port}, Protocol: ${protocol}, Secure: ${secure ? 'Yes' : 'No'}`,
-          url: url,
+          detail: `Address: ${address}, Port: ${port}, Protocol: ${protocol}, Private: ${secure ? 'Yes' : 'No'}`,
+          id: id,
           type: 'server'
         });
       }
     }
 
     if (activeClients.size > 0) {
-      for (const [port, { url, address, protocol, secure }] of activeClients) {
+      for (const [id, { url, address, protocol, secure, port }] of activeClients) {
         const localUrl = protocol === 'TCP' ? `http://${address}:${port}/` : null;
         items.push({
           label: `Client: Port ${port}, URL: ${url}`,
-          detail: `Address: ${address}, Protocol: ${protocol}, Secure: ${secure ? 'Yes' : 'No'}${localUrl ? `, Local URL: ${localUrl}` : ''}`,
-          url: url,
-          localUrl: localUrl, // Store local URL for TCP clients
-          port: port,
+          detail: `Address: ${address}, Protocol: ${protocol}, Private: ${secure ? 'Yes' : 'No'}${localUrl ? `, Local URL: ${localUrl}` : ''}`,
+          id: id,
+          localUrl: localUrl,
           type: 'client'
         });
       }
@@ -283,12 +277,12 @@ function activate(context) {
       ];
 
       const menuSelection = await vscode.window.showQuickPick(menuOptions, {
-        placeHolder: `Select an action for ${selected.type === 'server' ? selected.url : 'port ' + selected.port}`
+        placeHolder: `Select an action for ${selected.type === 'server' ? selected.label : 'port ' + selected.label.split('Port ')[1].split(',')[0]}`
       });
 
       if (menuSelection) {
         if (menuSelection.action === 'copy') {
-          const urlToCopy = selected.url;
+          const urlToCopy = selected.label.split('Server: ')[1] || selected.label.split('URL: ')[1];
           ncp.copy(urlToCopy, function () {
             vscode.window.showInformationMessage('URL copied to clipboard.');
           });
@@ -299,9 +293,9 @@ function activate(context) {
           });
         } else if (menuSelection.action === 'destroy') {
           if (selected.type === 'server') {
-            vscode.commands.executeCommand('holesail-liveports.destroyServer', selected.url);
+            vscode.commands.executeCommand('holesail-liveports.destroyServer', selected.id);
           } else if (selected.type === 'client') {
-            vscode.commands.executeCommand('holesail-liveports.disconnectClient', selected.port);
+            vscode.commands.executeCommand('holesail-liveports.disconnectClient', selected.id);
           }
         }
       }

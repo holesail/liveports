@@ -45,7 +45,7 @@ Press `Ctrl + Shift + P` to execute extension commands and search for `liveports
 
 ## Release Notes
 
-### 2.0.2
+### 2.0.0
 
 - **Unified Holesail Module**: Replaced separate `holesail-server` and `holesail-client` modules with a single `holesail` module for both server and client functionality.
 - **Protocol Support**: Added support for both TCP and UDP protocols, selectable via a quick pick menu.
