@@ -232,6 +232,55 @@ function activate(context) {
     }
   });
 
+  let restartServer = vscode.commands.registerCommand('holesail-liveports.restartServer', async function (id) {
+    const entry = activeServers.get(id);
+    if (entry) {
+      try {
+        await entry.holesail.close();
+        let holesail = new Holesail({
+          server: true,
+          port: +entry.port,
+          host: entry.address,
+          udp: entry.protocol === 'UDP',
+          secure: entry.secure,
+        });
+        await holesail.ready();
+        
+        const info = holesail.info;
+        const url = info.url;
+
+        activeServers.set(id, { holesail, port: entry.port, address: entry.address, protocol: entry.protocol, secure: entry.secure, url });
+        vscode.window.showInformationMessage(`${entry.address}:${entry.port} restarted successfully. New URL: ${url}`);
+      } catch (e) {
+        vscode.window.showErrorMessage(`Failed to restart server: ${e.message}`);
+      }
+    }
+  });
+
+  let restartClient = vscode.commands.registerCommand('holesail-liveports.restartClient', async function (id) {
+    const entry = activeClients.get(id);
+    if (entry) {
+      try {
+        await entry.holesail.close();
+        const data = Holesail.urlParser(entry.url);
+        let holesail = new Holesail({
+          client: true,
+          key: data.key,
+          secure: entry.secure,
+          port: +entry.port,
+          host: entry.address,
+          udp: entry.protocol === 'UDP'
+        });
+        await holesail.ready();
+
+        activeClients.set(id, { holesail, url: entry.url, address: entry.address, protocol: entry.protocol, secure: entry.secure, port: +entry.port });
+        vscode.window.showInformationMessage(`Client on port ${entry.port} restarted successfully`);
+      } catch (e) {
+        vscode.window.showErrorMessage(`Failed to restart client: ${e.message}`);
+      }
+    }
+  });
+
   let showConnections = vscode.commands.registerCommand('holesail-liveports.showConnections', async function () {
     const items = [];
 
@@ -273,6 +322,7 @@ function activate(context) {
       const menuOptions = [
         { label: 'Copy URL', action: 'copy' },
         ...(selected.type === 'client' && selected.localUrl ? [{ label: 'Copy Local HTTP URL', action: 'copyLocal' }] : []),
+        { label: selected.type === 'server' ? 'Restart Server' : 'Restart Client', action: 'restart' },
         { label: selected.type === 'server' ? 'Destroy Server' : 'Disconnect Client', action: 'destroy' }
       ];
 
@@ -296,6 +346,12 @@ function activate(context) {
             vscode.commands.executeCommand('holesail-liveports.destroyServer', selected.id);
           } else if (selected.type === 'client') {
             vscode.commands.executeCommand('holesail-liveports.disconnectClient', selected.id);
+          }
+        } else if (menuSelection.action === 'restart') {
+          if (selected.type === 'server') {
+            vscode.commands.executeCommand('holesail-liveports.restartServer', selected.id);
+          } else if (selected.type === 'client') {
+            vscode.commands.executeCommand('holesail-liveports.restartClient', selected.id);
           }
         }
       }
@@ -339,6 +395,8 @@ function activate(context) {
   context.subscriptions.push(lookup);
   context.subscriptions.push(destroyServer);
   context.subscriptions.push(disconnectClient);
+  context.subscriptions.push(restartServer);
+  context.subscriptions.push(restartClient);
   context.subscriptions.push(showConnections);
 }
 
