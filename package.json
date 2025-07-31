@@ -1,9 +1,9 @@
 {
   "name": "holesail-liveports",
-  "displayName": "liveports",
+  "displayName": "Liveports",
   "publisher": "holesail",
   "description": "A VS Code extension to instantly create a network tunnel and share websites on your localhost with anyone in the world.",
-  "version": "1.0.1",
+  "version": "2.0.2",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.87.0"
@@ -16,8 +16,14 @@
     "Other"
   ],
   "activationEvents": [
-		"*"
-	],
+    "onCommand:holesail-liveports.liveports-share",
+    "onCommand:holesail-liveports.liveports-connect",
+    "onCommand:holesail-liveports.showOptions1",
+    "onCommand:holesail-liveports.showOptions2",
+    "onCommand:holesail-liveports.destroyServer",
+    "onCommand:holesail-liveports.disconnectClient",
+    "onCommand:holesail-liveports.liveports-lookup"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
@@ -28,30 +34,45 @@
       {
         "command": "holesail-liveports.liveports-connect",
         "title": "Holesail Liveports Connect: Instantly view localhost website of anyone in the world using Liveports"
+      },
+      {
+        "command": "holesail-liveports.liveports-lookup",
+        "title": "Holesail Liveports Lookup: Check details of a Holesail URL"
+      },
+      {
+        "command": "holesail-liveports.showOptions1",
+        "title": "Holesail Liveports: Share Options"
+      },
+      {
+        "command": "holesail-liveports.showOptions2",
+        "title": "Holesail Liveports: Connect Options"
+      },
+      {
+        "command": "holesail-liveports.disconnectClient",
+        "title": "Holesail Liveports: Disconnect Client"
       }
     ]
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "holesail-server": "^2.2.0",
+    "holesail-client": "^2.1.1",
+    "copy-paste": "^1.5.3",
+    "z32": "^1.1.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
-    "@types/node": "18.x",
+    "@types/node": "^18.17.0",
     "@types/vscode": "^1.87.0",
     "@vscode/test-cli": "^0.0.6",
     "@vscode/test-electron": "^2.3.9",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "copy-paste": "^1.5.3",
-    "express": "^4.19.2",
-    "holesail-client": "latest",
-    "holesail-server": "latest",
-    "vsce": "^2.15.0",
-    "vscode": "^1.1.37"
+    "typescript": "^5.3.3",
+    "@vscode/vsce": "^2.15.0"
   }
 }
