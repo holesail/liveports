@@ -256,6 +256,7 @@ function activate(context) {
         items.push({
           label: `Client: Port ${port}, URL: ${url}`,
           detail: `Address: ${address}, Protocol: ${protocol}, Secure: ${secure ? 'Yes' : 'No'}`,
+          url: url, 
           port: port,
           type: 'client'
         });
@@ -284,7 +285,7 @@ function activate(context) {
 
       if (menuSelection) {
         if (menuSelection.action === 'copy') {
-          const urlToCopy = selected.type === 'server' ? selected.url : selected.url;
+          const urlToCopy = selected.url; 
           ncp.copy(urlToCopy, function () {
             vscode.window.showInformationMessage('URL copied to clipboard.');
           });
@@ -339,7 +340,7 @@ function activate(context) {
   context.subscriptions.push(showConnections);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,
