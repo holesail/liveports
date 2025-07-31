@@ -181,7 +181,7 @@ function activate(context) {
     }
 
     const data = Holesail.urlParser(url);
-    let secure = data.secure !== undefined ? data.secure : true;
+    let secure = data.secure !== undefined ? data.secure : false;
 
     try {
       const result = await Holesail.lookup(url);
