@@ -253,10 +253,12 @@ function activate(context) {
 
     if (activeClients.size > 0) {
       for (const [port, { url, address, protocol, secure }] of activeClients) {
+        const localUrl = protocol === 'TCP' ? `http://${address}:${port}/` : null;
         items.push({
           label: `Client: Port ${port}, URL: ${url}`,
-          detail: `Address: ${address}, Protocol: ${protocol}, Secure: ${secure ? 'Yes' : 'No'}`,
-          url: url, 
+          detail: `Address: ${address}, Protocol: ${protocol}, Secure: ${secure ? 'Yes' : 'No'}${localUrl ? `, Local URL: ${localUrl}` : ''}`,
+          url: url,
+          localUrl: localUrl, // Store local URL for TCP clients
           port: port,
           type: 'client'
         });
@@ -276,6 +278,7 @@ function activate(context) {
     if (selected) {
       const menuOptions = [
         { label: 'Copy URL', action: 'copy' },
+        ...(selected.type === 'client' && selected.localUrl ? [{ label: 'Copy Local HTTP URL', action: 'copyLocal' }] : []),
         { label: selected.type === 'server' ? 'Destroy Server' : 'Disconnect Client', action: 'destroy' }
       ];
 
@@ -285,9 +288,14 @@ function activate(context) {
 
       if (menuSelection) {
         if (menuSelection.action === 'copy') {
-          const urlToCopy = selected.url; 
+          const urlToCopy = selected.url;
           ncp.copy(urlToCopy, function () {
             vscode.window.showInformationMessage('URL copied to clipboard.');
+          });
+        } else if (menuSelection.action === 'copyLocal') {
+          const urlToCopy = selected.localUrl;
+          ncp.copy(urlToCopy, function () {
+            vscode.window.showInformationMessage('Local HTTP URL copied to clipboard.');
           });
         } else if (menuSelection.action === 'destroy') {
           if (selected.type === 'server') {
@@ -340,7 +348,7 @@ function activate(context) {
   context.subscriptions.push(showConnections);
 }
 
-function deactivate() { }
+function deactivate() {}
 
 module.exports = {
   activate,
