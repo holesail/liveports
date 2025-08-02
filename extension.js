@@ -58,8 +58,7 @@ function activate(context) {
     if (!privateChoice) {
       return;
     }
-    const private = privateChoice === 'Yes' ? 'true' : 'false';
-
+    const private = privateChoice === 'Yes' ? true : false;
     try {
       let holesail = new Holesail({
         server: true,
