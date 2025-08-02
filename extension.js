@@ -51,14 +51,14 @@ function activate(context) {
     }
     const udp = proto === 'UDP';
 
-    const privateOptions = ['true', 'false'];
+    const privateOptions = ['Yes', 'No'];
     const privateChoice = await vscode.window.showQuickPick(privateOptions, {
-      placeHolder: 'Use private connection? (default: true)'
+      placeHolder: 'Use private connection? (default: Yes)'
     });
     if (!privateChoice) {
       return;
     }
-    const private = privateChoice === 'true';
+    const private = privateChoice === 'Yes' ? 'true' : 'false';
 
     try {
       let holesail = new Holesail({
