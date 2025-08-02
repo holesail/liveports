@@ -22,7 +22,8 @@
     "onCommand:holesail-liveports.showOptions2",
     "onCommand:holesail-liveports.destroyServer",
     "onCommand:holesail-liveports.disconnectClient",
-    "onCommand:holesail-liveports.liveports-lookup"
+    "onCommand:holesail-liveports.liveports-lookup",
+    "onStartupFinished"
   ],
   "main": "./extension.js",
   "contributes": {
