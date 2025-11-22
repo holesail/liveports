@@ -1,9 +1,9 @@
 # Holesail Liveports
 
-* Join our [Keet channel](https://keet.io/) for support: [Room invite](pear://keet/yfo1wq5x8fg5xaxcc845csc5k65kdzcoxsqc58wozi93ty5kr3u1147zppesp8gomwguthoxhj9x3dx79wxd3thi9ajj347i7ikny6z6otnsizfrub3x6yehzjb7qfa5794nzdf7tacx8gfo4c7czober5ho1ye
+* Join our [Keet channel](https://keet.io/) for support: [Room invite](pear://keet/nfo4of1xqm36up7qaf1un7mfih5on41t33ga8znpwhj67y5gs1zq1j349jqy355t3mnek5ei5rzhfaprbf5rx39amyysda1yyf1ap37cq1za65pke8bypzfweb7b61csberxxwmahybu35qxn3zrsnutqynhyyedoddotqg4isfrjrae911pmwcxn7rhr
 )
 
-Instantly share your localhost website with anyone in the world and see what your friends are building.
+Instantly share your localhost website (or any local server) with anyone in the world and see what your friends are building.
 
 ## Features
 
@@ -48,38 +48,6 @@ Alternatively you can press `Ctrl + Shift + P` to execute extension commands and
 - Lists all active servers and clients.
 - Allows copying keys, copying local HTTP URLs (for TCP clients), or destroying/disconnecting servers and clients.
 
-## Release Notes
-
-### 2.0.0
-
-- **Unified Holesail Module**: Replaced separate `holesail-server` and `holesail-client` modules with a single `holesail` module for both server and client functionality.
-- **Protocol Support**: Added support for both TCP and UDP protocols, selectable via a quick pick menu.
-- **Connection Lookup**: Added a new `liveports-lookup` command to query details of a Holesail URL.
-- **Enhanced Connection Management**: Replaced single `server` and `client` variables with `activeServers` and `activeClients` Maps to support multiple concurrent connections.
-- **Improved UI**: Consolidated status bar items into `Liveports` and `Connections` for streamlined access to commands and connection management.
-- **Confirmation Prompts**: Added confirmation prompts for destroying servers and disconnecting clients.
-- **Connection Details**: Enhanced `showConnections` to display detailed information about active servers and clients, with options to copy URLs or manage connections.
-- **Error Handling**: Improved error messages for failed server startups, client connections, and lookups.
-
-### 1.0.3
-
-- Added support for TCP and UDP protocols
-- Introduced secure connection option with cryptographic keys
-- Added connection lookup functionality
-- Enhanced connection management with status bar integration
-- Improved user interface with quick pick menus for protocol and security options
-- Added ability to view and manage all active connections
-
-### 1.0.2
-
-Updated holesail server and client.
-
-### 1.0.0
-
-Initial release of Holesail Liveports.
-
----
-
 License: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 ---
@@ -87,7 +55,7 @@ License: [GPL v3](https://www.gnu.org/licenses/gpl-3.0.txt)
 ## For more information
 
 * [Check our Github](https://github.com/holesail/liveports)
-* Join our [Keet channel](https://keet.io/) for support: [Room invite](pear://keet/yfo1wq5x8fg5xaxcc845csc5k65kdzcoxsqc58wozi93ty5kr3u1147zppesp8gomwguthoxhj9x3dx79wxd3thi9ajj347i7ikny6z6otnsizfrub3x6yehzjb7qfa5794nzdf7tacx8gfo4c7czober5ho1ye
+* Join our [Keet channel](https://keet.io/) for support: [Room invite](pear://keet/nfo4of1xqm36up7qaf1un7mfih5on41t33ga8znpwhj67y5gs1zq1j349jqy355t3mnek5ei5rzhfaprbf5rx39amyysda1yyf1ap37cq1za65pke8bypzfweb7b61csberxxwmahybu35qxn3zrsnutqynhyyedoddotqg4isfrjrae911pmwcxn7rhr
 )
 
 

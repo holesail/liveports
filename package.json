@@ -3,7 +3,7 @@
   "displayName": "liveports",
   "publisher": "holesail",
   "description": "Create network tunnels and share serve running on your localhost with anyone in the world.",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "icon": "logo.png",
   "engines": {
     "vscode": "^1.87.0"
@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "copy-paste": "^1.5.3",
-    "holesail": "^2.2.0"
+    "holesail": "^2.4.1"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
